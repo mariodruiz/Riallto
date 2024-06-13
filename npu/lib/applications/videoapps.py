@@ -158,7 +158,9 @@ class VideoApplication:
 
     def _get_resolution(self, videosource):
         if isinstance(videosource, int):
-            if videosource == 0:
+            if os.name != 'nt':
+                prop = cv2.CAP_V4L2
+            elif videosource == 0:
                 prop = cv2.CAP_MSMF
             else:
                 prop = cv2.CAP_DSHOW
