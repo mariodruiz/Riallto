@@ -180,17 +180,6 @@ class VideoApplication:
             self.cam_h, self.cam_w = \
                 _find_closest_resolution(self.cam_h, self.cam_w)
 
-    def _get_resolution_file(self, filename):
-        self._cap = cv2.VideoCapture(filename)
-
-        self._resize = not _set_supported_webcam_resolution(self._cap)
-        self.cam_h, self.cam_w = _get_webcam_resolution(self._cap)
-
-        self._camres = self.cam_w, self.cam_h
-        if self._resize:
-            self.cam_h, self.cam_w = \
-                _find_closest_resolution(self.cam_h, self.cam_w)
-
     def start(self):
         """Start the video processing"""
         ret, _ = self._cap.read()
