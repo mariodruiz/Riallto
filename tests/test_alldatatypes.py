@@ -5,8 +5,7 @@ import pytest
 import numpy as np
 from npu.build.kernel import Kernel
 from npu.runtime import AppRunner
-from .test_applications import check_npu
-from .test_applications import SingleKernelCall
+from .test_applications import check_npu, SingleKernelCall
 from ml_dtypes import bfloat16
 
 
@@ -63,7 +62,6 @@ def _appbuild_and_test(datatype, shapein=None):
 
     bo_in[:] = test_data
     bo_in.sync_to_npu()
-    app._refresh_sequence()
     app.call(bo_in, bo_out)
     bo_out.sync_from_npu()
     res[:] = bo_out[:]
