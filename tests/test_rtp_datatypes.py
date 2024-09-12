@@ -15,11 +15,11 @@ kernel_src = '''
 
 extern "C" {
 
-void vector_scale(uint8_t *in_buffer, uint8_t *out_buffer, uint8_t scale) {
+void vector_add_factor(uint8_t *in_buffer, uint8_t *out_buffer, uint8_t scale) {
     auto vec_in = ::aie::load_v<32>(in_buffer);
     in_buffer += 32;
-    auto out = ::aie::mul(vec_in, scale);
-    ::aie::store_v(out_buffer, out.to_vector<uint8_t>(0));
+    auto out = ::aie::add(vec_in, (uint8_t) scale);
+    ::aie::store_v(out_buffer, out);
     out_buffer += 32;
 }
 
@@ -27,11 +27,11 @@ void vector_scale(uint8_t *in_buffer, uint8_t *out_buffer, uint8_t scale) {
 '''
 
 
-def vec_scale_behavior(invobj):
-    invobj.out_buffer.array = invobj.in_buffer.array * invobj.scale
+def vector_add_factor_behavior(invobj):
+    invobj.out_buffer.array = invobj.in_buffer.array
 
 
-def _appbuild_and_test(datatype):
+def _appbuild_and_test(datatype, interpret_bits = True):
     check_npu()
     shape = (32, 1)
     bpi = np.dtype(datatype).itemsize
@@ -42,7 +42,7 @@ def _appbuild_and_test(datatype):
     kernel_src0 = kernel_src.replace('uint8_t', f'{datatype_txt}' +
                                       ('' if datatype == bfloat16 else '_t'))
 
-    vec_scale = Kernel(kernel_src0, vec_scale_behavior)
+    vecadd_factor = Kernel(kernel_src0, vector_add_factor_behavior)
 
     class SingleBufferOneRtp(AppBuilder):
         def __init__(self, kernel):
@@ -52,32 +52,46 @@ def _appbuild_and_test(datatype):
         def callgraph(self, x_in, x_out):
             x_out[:] = self.kernel(x_in, 1)
 
-    trace_app = SingleBufferOneRtp(vec_scale)
+    trace_app = SingleBufferOneRtp(vecadd_factor)
     trace_app.build(buffin, buffout)
 
     app = AppRunner(f"{trace_app.name}.xclbin")
 
     # generate a numpy array of random data of shape buffin.shape
-    if datatype == bfloat16:
+    if datatype in [bfloat16, np.float32]:
         test_data = bfloat16(np.random.randn(*buffin.shape))
+        value = datatype(1.136)
+        if interpret_bits:
+            factor = int.from_bytes(value.tobytes(), "big")
+        else:
+            factor = value
     else:
         test_data = np.random.randint(0, (2**(bpi*8))-1, buffin.shape,
                                       dtype=buffin.dtype)
+        factor = 3
+
     res = np.zeros(buffin.shape, dtype=buffin.dtype)
     bo_in = app.allocate(shape=buffin.shape, dtype=buffin.dtype)
     bo_out = app.allocate(shape=buffin.shape, dtype=buffin.dtype)
 
     bo_in[:] = test_data
     bo_in.sync_to_npu()
+    app.vector_add_factor_0.scale = factor
     app.call(bo_in, bo_out)
     bo_out.sync_from_npu()
     res[:] = bo_out[:]
 
     del app
-    assert np.array_equal(test_data, res)
+    assert np.array_equal(test_data + datatype(factor), res)
 
 
 @pytest.mark.parametrize('datatype', [np.uint8, np.uint16, np.uint32,
                                       np.float32, bfloat16])
 def test_appbuild_rtp_datatype(datatype):
     _appbuild_and_test(datatype)
+
+
+@pytest.mark.xfail
+@pytest.mark.parametrize('datatype', [np.float32, bfloat16])
+def test_appbuild_rtp_datatype_fail(datatype):
+    _appbuild_and_test(datatype, interpret_bits=False)
