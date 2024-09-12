@@ -91,7 +91,7 @@ def test_appbuild_rtp_datatype(datatype):
     _appbuild_and_test(datatype)
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="Float datatypes are not properly interpreted")
 @pytest.mark.parametrize('datatype', [np.float32, bfloat16])
 def test_appbuild_rtp_datatype_fail(datatype):
     _appbuild_and_test(datatype, interpret_bits=False)
