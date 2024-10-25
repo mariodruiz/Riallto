@@ -6,7 +6,7 @@ import numpy as np
 from npu.build.kernel import Kernel
 from npu.build.appbuilder import AppBuilder
 from npu.runtime import AppRunner
-from .test_applications import check_npu, SingleKernelCall
+from .test_applications import check_npu
 from ml_dtypes import bfloat16
 
 
