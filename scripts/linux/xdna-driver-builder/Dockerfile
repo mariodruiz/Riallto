@@ -49,5 +49,8 @@ RUN cd /root/xdna-driver/build && ./build.sh -package
 
 RUN cd /root/xdna-driver/xrt/build && ./build.sh -noert
 
-RUN cp /root/xdna-driver/build/Release/xrt_plugin*.deb /root/debs/
-RUN cp /root/xdna-driver/xrt/build/Release/xrt*xrt.deb /root/debs/
+#RUN cp /root/xdna-driver/build/Release/xrt_plugin*.deb /root/debs/
+#RUN cp /root/xdna-driver/xrt/build/Release/xrt*xrt.deb /root/debs/
+
+RUN sudo -E dpkg -i /root/xdna-driver/xrt/build/Release/xrt_*-amd64-xrt.deb
+RUN sudo -E dpkg -i /root/xdna-driver/build/Release/xrt_plugin*-amdxdna.deb

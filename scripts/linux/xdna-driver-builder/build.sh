@@ -22,7 +22,7 @@ wget -P _work https://kernel.ubuntu.com/mainline/v$KERNEL_VERSION/amd64/$KERNEL_
 
 # Build a container that creates the appropriate linux kernel version
 docker build \
-  -t xdna_deb_builder:latest \
+  -t npubase \
   --build-arg KERNEL_HEADERS=$KERNEL_HEADERS \
   --build-arg KERNEL_HEADERS_GENERIC=$KERNEL_HEADERS_GENERIC \
   --build-arg KERNEL_MODULES=$KERNEL_MODULES \
@@ -31,15 +31,14 @@ docker build \
 
 docker kill xdna_deb_builder_container || true
 
-# Lauch an image with that container
+# Launch an image with that container
 docker run -dit --rm --name xdna_deb_builder_container \
   -v $(pwd):/workspace \
   -w /workspace/ \
-  xdna_deb_builder:latest \
+  npubase \
   /bin/bash
 
 docker exec xdna_deb_builder_container bash -c "tar -zcvf driver.tar.gz /root/debs && mv driver.tar.gz /workspace/ubuntu24.04_npu_drivers.tar.gz"
 
 ## cleanup
 docker kill xdna_deb_builder_container || true
-docker image rm --force xdna_deb_builder:latest
