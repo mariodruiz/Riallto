@@ -3,7 +3,6 @@
 # Copyright (C) 2023 Advanced Micro Devices, Inc. All rights reserved.
 # SPDX-License-Identifier: MIT
 
-
 KERNEL_VERSION="6.10-rc2"
 KERNEL_VERSION_FULL="6.10.0-061000rc2"
 BUILD_DATE="202406022333"
@@ -20,13 +19,27 @@ wget -P _work https://kernel.ubuntu.com/mainline/v$KERNEL_VERSION/amd64/$KERNEL_
 wget -P _work https://kernel.ubuntu.com/mainline/v$KERNEL_VERSION/amd64/$KERNEL_IMAGE
 wget -P _work https://kernel.ubuntu.com/mainline/v$KERNEL_VERSION/amd64/$KERNEL_MODULES
 
+USER_NAME="$USER"
+
+if [ $# -eq 1 ]; then
+    USER_NAME="$1"
+fi
+
+USER_ID=`id -u $USER_NAME`
+GROUP_ID=`id -g $USER_NAME`
+GROUP_NAME=`id -g -n $USER_NAME`
+
 # Build a container that creates the appropriate linux kernel version
 docker build \
-  -t npubase \
-  --build-arg KERNEL_HEADERS=$KERNEL_HEADERS \
-  --build-arg KERNEL_HEADERS_GENERIC=$KERNEL_HEADERS_GENERIC \
-  --build-arg KERNEL_MODULES=$KERNEL_MODULES \
-  --build-arg KERNEL_IMAGE=$KERNEL_IMAGE \
+    -t npubase \
+    --build-arg KERNEL_HEADERS=$KERNEL_HEADERS \
+    --build-arg KERNEL_HEADERS_GENERIC=$KERNEL_HEADERS_GENERIC \
+    --build-arg KERNEL_MODULES=$KERNEL_MODULES \
+    --build-arg KERNEL_IMAGE=$KERNEL_IMAGE \
+    --build-arg LIC_MAC=$MAC \
+    --build-arg USER_ID=${USER_ID} \
+    --build-arg GROUP_ID=${GROUP_ID} \
+    --build-arg GROUP_NAME=${GROUP_NAME} \
   ./
 
 docker kill xdna_deb_builder_container || true
