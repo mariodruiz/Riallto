@@ -39,10 +39,10 @@ for URL in "${URLS[@]}"; do
         fi
 done
 
-# Check that we are on Ubuntu24.04.2
+# Check that we are on Ubuntu24.04.3
 distro_info=$(lsb_release -d)
-if [[ $distro_info != *"Ubuntu 24.04.*"* ]]; then
-	echo "Riallto is only currently supported on Ubuntu 24.04.2 or newer"
+if [[ $distro_info != *"Ubuntu 24.04.3"* ]]; then
+	echo "Riallto is only currently supported on Ubuntu 24.04.3"
 	exit 1
 fi
 
