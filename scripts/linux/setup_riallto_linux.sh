@@ -41,8 +41,8 @@ done
 
 # Check that we are on Ubuntu24.04.2
 distro_info=$(lsb_release -d)
-if [[ $distro_info != *"Ubuntu 24.04.2"* ]]; then
-	echo "Riallto is only currently supported on Ubuntu 24.04.2"
+if [[ $distro_info != *"Ubuntu 24.04.*"* ]]; then
+	echo "Riallto is only currently supported on Ubuntu 24.04.2 or newer"
 	exit 1
 fi
 
