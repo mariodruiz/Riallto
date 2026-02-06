@@ -20,7 +20,7 @@ RUN git config --global http.postBuffer 157286400
 RUN git config --global url."https://github.com/".insteadOf "git@github.com:"
 RUN cd /root && git clone https://github.com/amd/xdna-driver.git
 RUN cd /root/xdna-driver && git checkout $XDNADRIVERCOMMITID
-RUN cd /root/xdna-driver && git submodule update --recursive
+RUN cd /root/xdna-driver && git submodule init && git submodule update --recursive
 
 RUN apt-get install -y cmake jq pkg-config wget libdrm-dev
 RUN apt-get install -y python3-pip ocl-icd-opencl-dev
