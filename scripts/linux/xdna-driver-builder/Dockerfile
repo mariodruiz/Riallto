@@ -4,7 +4,7 @@
 FROM ubuntu:24.04
 
 ARG DEBIAN_FRONTEND=noninteractive
-ENV XDNADRIVERCOMMITID=6fb9071185fefb22bee538a4667b51b012339e64
+ENV XDNADRIVERCOMMITID=27580e037f6b956865c639dac5e5c239f29e1198
 
 RUN apt-get update
 RUN apt-get install -y --install-recommends linux-generic-hwe-24.04
@@ -20,7 +20,7 @@ RUN git config --global http.postBuffer 157286400
 RUN git config --global url."https://github.com/".insteadOf "git@github.com:"
 RUN cd /root && git clone https://github.com/amd/xdna-driver.git
 RUN cd /root/xdna-driver && git checkout $XDNADRIVERCOMMITID
-RUN cd /root/xdna-driver && git submodule init && git submodule update --recursive
+RUN cd /root/xdna-driver && git submodule update --init --recursive
 
 RUN apt-get install -y cmake jq pkg-config wget libdrm-dev
 RUN apt-get install -y python3-pip ocl-icd-opencl-dev
