@@ -1,12 +1,11 @@
-# Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2023-2026 Advanced Micro Devices, Inc. All rights reserved.
 # SPDX-License-Identifier: MIT
 
-FROM ubuntu:24.04
+FROM npubase
 
 ARG BUILD_TEMPDIR
 ARG LIC_MAC=00:00:00:00:00:00
 ENV LIC_MAC ${LIC_MAC}
-ENV XDNADRIVERCOMMITID=27580e037f6b956865c639dac5e5c239f29e1198
 
 ARG USER_ID
 ARG GROUP_ID
@@ -15,8 +14,8 @@ ARG GROUP_NAME
 SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update
-RUN apt-get install -y --install-recommends linux-generic-hwe-24.04
-RUN apt-get install -y sudo adduser perl ocl-icd-libopencl1
+
+RUN apt-get install -y sudo adduser perl
 
 RUN deluser --remove-home $(getent passwd | awk -F: -v uid="$USER_ID" '$3 == uid {print $1}') || echo "Ignoring error, as uid:${USER_ID} does not exist"
 RUN groupadd -g ${GROUP_ID} ${GROUP_NAME} || echo "Ignoring error, as ${GROUP_NAME} already exists"
@@ -33,26 +32,14 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # Generate locales
 RUN sudo apt-get update
-RUN sudo apt-get install -y git vim wget locales
+RUN sudo apt-get install -y locales
 RUN sudo locale-gen en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC sudo -E apt-get install -y tzdata
 
-RUN git clone https://github.com/amd/xdna-driver.git
-RUN cd xdna-driver/ && git checkout $XDNADRIVERCOMMITID
-RUN cd xdna-driver && git submodule update --init --recursive
-RUN sudo /home/riallto/xdna-driver/xrt/src/runtime_src/tools/scripts/xrtdeps.sh -docker
-
 COPY $BUILD_TEMPDIR/root/debs npu_ubuntu_debs
-
-RUN sudo apt-get install -y dkms udev python3
-RUN sudo apt-get install -y python3-pip ocl-icd-opencl-dev uuid-dev libopencv-dev python3-opencv
-
-RUN sudo -E dpkg -i npu_ubuntu_debs/xrt_*-amd64-base.deb
-RUN sudo -E dpkg -i npu_ubuntu_debs/xrt_*-amd64-base-dev.deb
-RUN sudo -E dpkg -i npu_ubuntu_debs/xrt_plugin*-amdxdna.deb
 
 RUN git clone https://github.com/AMDResearch/Riallto --depth=1
 
@@ -61,7 +48,6 @@ SHELL ["/bin/bash", "-l", "-c"]
 # Setup the bashrc environment
 RUN echo "source /opt/xilinx/xrt/setup.sh" >> ~/.bashrc
 RUN sed -i '6,9d' ~/.bashrc # remove interactive only mode in bashrc
-RUN echo "export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:/opt/xilinx/xrt/lib"
 
 # Setup Riallto
 RUN sudo apt-get install -y python3-venv
