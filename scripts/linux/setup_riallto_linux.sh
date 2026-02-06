@@ -121,7 +121,7 @@ if [ ! -f "${NPU_FIRMWARE}" ]; then
 		packages=$(dpkg -l | awk '/^ii/ && $2 ~ /^xrt/ { print $2 }')
 		sudo apt remove -y $packages
 		sudo apt -y --fix-broken install
-		sudo apt install -y ocl-icd-libopencl1 dkms
+		sudo apt install -y ocl-icd-libopencl1 dkms libboost-filesystem1.83.0 libboost-program-options1.83.0 uuid-dev
 		sudo -E dpkg -i xrt_*-amd64-base.deb || true
 		sudo -E dpkg -i xrt_*-amd64-base-dev.deb || true
 		sudo -E dpkg -i xrt_plugin*-amdxdna.deb || true
