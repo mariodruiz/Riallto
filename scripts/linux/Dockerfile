@@ -6,6 +6,7 @@ FROM ubuntu:24.04
 ARG BUILD_TEMPDIR
 ARG LIC_MAC=00:00:00:00:00:00
 ENV LIC_MAC ${LIC_MAC}
+ENV XDNADRIVERCOMMITID=27580e037f6b956865c639dac5e5c239f29e1198
 
 ARG USER_ID
 ARG GROUP_ID
@@ -39,9 +40,9 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC sudo -E apt-get install -y tzdata
 
-RUN git clone https://github.com/amd/xdna-driver.git --recursive
-RUN cd xdna-driver/ && git checkout 176d6ec7a5b65767d02a4bae477962456ac8c3f4
-RUN cd xdna-driver/ && git submodule update --recursive
+RUN git clone https://github.com/amd/xdna-driver.git
+RUN cd xdna-driver/ && git checkout $XDNADRIVERCOMMITID
+RUN cd /root/xdna-driver && git submodule update --init --recursive
 RUN sudo chmod +x /home/riallto/xdna-driver/xrt/src/runtime_src/tools/scripts/xrtdeps.sh
 RUN sudo /home/riallto/xdna-driver/xrt/src/runtime_src/tools/scripts/xrtdeps.sh -docker
 
