@@ -11,7 +11,7 @@ RUN apt-get install -y --install-recommends linux-generic-hwe-24.04
 RUN apt-get install -y linux-headers-$(uname -r)
 RUN apt-get install -y vim git flex bison make libelf1t64
 RUN apt-get install -y dpkg-dev libelf-dev zstd ocl-icd-libopencl1
-RUN apt-get install -y bc debhelper rsync kmod cpio libssl-dev:native dkms udev python3 htop
+RUN apt-get install -y bc debhelper rsync kmod cpio libssl-dev:native dkms udev python3 htop python3-venv
 
 RUN git config --global http.postBuffer 157286400
 

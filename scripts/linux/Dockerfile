@@ -39,8 +39,6 @@ ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
 RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC sudo -E apt-get install -y tzdata
 
-COPY $BUILD_TEMPDIR/root/debs npu_ubuntu_debs
-
 RUN git clone https://github.com/AMDResearch/Riallto --depth=1
 
 SHELL ["/bin/bash", "-l", "-c"]
@@ -50,7 +48,6 @@ RUN echo "source /opt/xilinx/xrt/setup.sh" >> ~/.bashrc
 RUN sed -i '6,9d' ~/.bashrc # remove interactive only mode in bashrc
 
 # Setup Riallto
-RUN sudo apt-get install -y python3-venv
 RUN python3 -m venv ~/riallto_venv
 RUN echo "source ~/riallto_venv/bin/activate" >> ~/.bashrc
 RUN source ~/.bashrc && cd ~/Riallto/scripts/wsl/ && chmod +x ubuntu_deps.sh && sudo ./ubuntu_deps.sh
