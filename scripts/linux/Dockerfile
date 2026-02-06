@@ -5,7 +5,7 @@ FROM npubase
 
 ARG BUILD_TEMPDIR
 ARG LIC_MAC=00:00:00:00:00:00
-ENV LIC_MAC ${LIC_MAC}
+ENV LIC_MAC=${LIC_MAC}
 
 ARG USER_ID
 ARG GROUP_ID
@@ -23,7 +23,7 @@ RUN useradd -u $USER_ID -g $GROUP_ID -ms /bin/bash riallto
 RUN adduser riallto sudo
 RUN echo 'riallto ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/riallto
 USER riallto
-ENV HOME /home/riallto
+ENV HOME=/home/riallto
 WORKDIR /home/riallto
 
 RUN sudo chmod a+rwx /root
@@ -34,9 +34,9 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN sudo apt-get update
 RUN sudo apt-get install -y locales
 RUN sudo locale-gen en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
 RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC sudo -E apt-get install -y tzdata
 
 COPY $BUILD_TEMPDIR/root/debs npu_ubuntu_debs
@@ -79,6 +79,6 @@ RUN source ~/.bashrc && python3 -m pip install notebook
 
 #Cleanup a bit
 RUN rm -rf /home/riallto/*.tar.gz
-ENV SHELL /bin/bash
+ENV SHELL=/bin/bash
 
 CMD ["/bin/bash", "-l", "-c", "jupyterhub-singleuser", "--allow-root"]
