@@ -42,8 +42,7 @@ RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC sudo -E apt-get install -y tzdata
 
 RUN git clone https://github.com/amd/xdna-driver.git
 RUN cd xdna-driver/ && git checkout $XDNADRIVERCOMMITID
-RUN cd /root/xdna-driver && git submodule update --init --recursive
-RUN sudo chmod +x /home/riallto/xdna-driver/xrt/src/runtime_src/tools/scripts/xrtdeps.sh
+RUN cd xdna-driver && git submodule update --init --recursive
 RUN sudo /home/riallto/xdna-driver/xrt/src/runtime_src/tools/scripts/xrtdeps.sh -docker
 
 COPY $BUILD_TEMPDIR/root/debs npu_ubuntu_debs
