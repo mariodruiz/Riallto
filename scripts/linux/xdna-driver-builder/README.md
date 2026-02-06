@@ -1,10 +1,13 @@
 # XDNA Linux NPU driver builder 
+
 A docker-based script that will recompile the kernel/xrt/xrt_plugin for the NPU device on linux.
 It will produce a tarball containing all the debian files needed to setup the system.
 
 ### To build the drivers
+
 Run the following command to build the tarball with the debs.
-```bash
+
+```sh
 ./build.sh
 ```
 
@@ -16,7 +19,8 @@ The expected output is a `ubuntu24.04_npu_drivers.tar.gz` tarball.
 First disable secure boot from the bios of your system.
 
 Extract the tarball, and update the kernel.
-```
+
+```sh
 tar -xzvf ubuntu24.04_npu_drivers.tar.gz
 sudo dpkg -i ./root/debs/linux-headers-*_amd64.deb
 sudo dpkg -i ./root/debs/linux-image-*_amd64.deb 
@@ -35,8 +39,9 @@ sudo dpkg -i ./root/debs/xrt_plugin.*-amdxdna.deb
 ### FAQ
 
 * If you get the following error on boot:
-```
+
+```console
 error: bad shim signature
 ```
-This means that secure boot has not been disabled from the machine and it cannot run the necessary kernel version.
 
+This means that secure boot has not been disabled from the machine and it cannot run the necessary kernel version.
